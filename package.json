@@ -7,7 +7,10 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "templates": "vite-node scripts/generate-templates.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -b"
   },
   "dependencies": {
     "exceljs": "^4.4.0",

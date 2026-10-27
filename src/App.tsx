@@ -2,6 +2,7 @@ import { useState } from 'react'
 import './App.css'
 import { FinanceProvider } from './state/FinanceContext'
 import { todayIso } from './lib/format'
+import { DataPage } from './pages/DataPage'
 import { DashboardPage } from './pages/DashboardPage'
 import { DebtsPage } from './pages/DebtsPage'
 import { InvestmentsPage } from './pages/InvestmentsPage'
@@ -12,6 +13,7 @@ const TABS = [
   { id: 'transactions', label: 'Lançamentos' },
   { id: 'debts', label: 'Dívidas' },
   { id: 'investments', label: 'Investimentos' },
+  { id: 'data', label: 'Planilha e dados' },
 ] as const
 
 type TabId = (typeof TABS)[number]['id']
@@ -48,6 +50,7 @@ export default function App() {
           {tab === 'transactions' && <TransactionsPage month={month} onMonthChange={setMonth} />}
           {tab === 'debts' && <DebtsPage />}
           {tab === 'investments' && <InvestmentsPage />}
+          {tab === 'data' && <DataPage month={month} />}
         </main>
       </div>
     </FinanceProvider>
