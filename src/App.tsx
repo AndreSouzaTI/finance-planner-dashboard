@@ -4,12 +4,14 @@ import { FinanceProvider } from './state/FinanceContext'
 import { todayIso } from './lib/format'
 import { DashboardPage } from './pages/DashboardPage'
 import { DebtsPage } from './pages/DebtsPage'
+import { InvestmentsPage } from './pages/InvestmentsPage'
 import { TransactionsPage } from './pages/TransactionsPage'
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'transactions', label: 'Lançamentos' },
   { id: 'debts', label: 'Dívidas' },
+  { id: 'investments', label: 'Investimentos' },
 ] as const
 
 type TabId = (typeof TABS)[number]['id']
@@ -45,6 +47,7 @@ export default function App() {
           {tab === 'dashboard' && <DashboardPage month={month} onMonthChange={setMonth} />}
           {tab === 'transactions' && <TransactionsPage month={month} onMonthChange={setMonth} />}
           {tab === 'debts' && <DebtsPage />}
+          {tab === 'investments' && <InvestmentsPage />}
         </main>
       </div>
     </FinanceProvider>
