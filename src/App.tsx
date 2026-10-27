@@ -2,14 +2,18 @@ import { useState } from 'react'
 import './App.css'
 import { FinanceProvider } from './state/FinanceContext'
 import { todayIso } from './lib/format'
+import { DashboardPage } from './pages/DashboardPage'
 import { TransactionsPage } from './pages/TransactionsPage'
 
-const TABS = [{ id: 'transactions', label: 'Lançamentos' }] as const
+const TABS = [
+  { id: 'dashboard', label: 'Dashboard' },
+  { id: 'transactions', label: 'Lançamentos' },
+] as const
 
 type TabId = (typeof TABS)[number]['id']
 
 export default function App() {
-  const [tab, setTab] = useState<TabId>('transactions')
+  const [tab, setTab] = useState<TabId>('dashboard')
   const [month, setMonth] = useState(() => todayIso().slice(0, 7))
 
   return (
@@ -35,7 +39,10 @@ export default function App() {
           ))}
         </nav>
 
-        <main>{tab === 'transactions' && <TransactionsPage month={month} onMonthChange={setMonth} />}</main>
+        <main>
+          {tab === 'dashboard' && <DashboardPage month={month} onMonthChange={setMonth} />}
+          {tab === 'transactions' && <TransactionsPage month={month} onMonthChange={setMonth} />}
+        </main>
       </div>
     </FinanceProvider>
   )
