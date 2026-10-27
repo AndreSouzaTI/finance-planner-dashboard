@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
 import type { Debt, FinanceData, Investment, Transaction } from '../types'
 import { emptyData, loadData, saveData } from '../lib/storage'
+import { buildSampleData } from '../lib/sampleData'
 
 type Collection = 'transactions' | 'debts' | 'investments'
 type ItemOf<C extends Collection> = FinanceData[C][number]
@@ -37,10 +38,18 @@ interface FinanceContextValue {
   reset: () => void
 }
 
+/** `?demo` in the URL opens the app with sample data (used by the live demo link). */
+const initialData = (): FinanceData => {
+  const stored = loadData()
+  const wantsDemo = new URLSearchParams(window.location.search).has('demo')
+  const isEmpty = stored.transactions.length + stored.debts.length + stored.investments.length === 0
+  return wantsDemo && isEmpty ? buildSampleData() : stored
+}
+
 const FinanceContext = createContext<FinanceContextValue | null>(null)
 
 export function FinanceProvider({ children }: { children: ReactNode }) {
-  const [data, dispatch] = useReducer(reducer, undefined, loadData)
+  const [data, dispatch] = useReducer(reducer, undefined, initialData)
 
   useEffect(() => saveData(data), [data])
 

@@ -6,7 +6,7 @@ import { DEBT_KIND_LABELS } from '../lib/labels'
 import { formatCompactCurrency, formatCurrency, newId, parseAmount } from '../lib/format'
 import { monthlyToYearly, summarizeDebts } from '../lib/finance'
 import { budgetToPayOffIn, simulatePayoff, type PayoffResult } from '../lib/debtPlanner'
-import { BALANCE_COLOR, EXPENSE_COLOR } from '../lib/palette'
+import { BALANCE_COLOR, EXPENSE_COLOR, ANIMATE_CHARTS } from '../lib/palette'
 import { Card, Empty, Field, Kpi } from '../components/ui'
 
 interface Draft {
@@ -299,8 +299,8 @@ export function DebtsPage() {
                   labelFormatter={(m) => `Mês ${m}`}
                 />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Line dataKey="avalanche" name="Avalanche" stroke={BALANCE_COLOR} strokeWidth={2} dot={false} />
-                <Line dataKey="snowball" name="Bola de neve" stroke={EXPENSE_COLOR} strokeWidth={2} dot={false} strokeDasharray="5 4" />
+                <Line isAnimationActive={ANIMATE_CHARTS} dataKey="avalanche" name="Avalanche" stroke={BALANCE_COLOR} strokeWidth={2} dot={false} />
+                <Line isAnimationActive={ANIMATE_CHARTS} dataKey="snowball" name="Bola de neve" stroke={EXPENSE_COLOR} strokeWidth={2} dot={false} strokeDasharray="5 4" />
               </LineChart>
             </ResponsiveContainer>
           </div>

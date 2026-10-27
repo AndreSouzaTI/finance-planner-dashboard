@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import './App.css'
 import { FinanceProvider } from './state/FinanceContext'
 import { todayIso } from './lib/format'
@@ -18,9 +18,26 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]['id']
 
+const tabFromHash = (): TabId => {
+  const id = window.location.hash.slice(1)
+  return TABS.some((t) => t.id === id) ? (id as TabId) : 'dashboard'
+}
+
 export default function App() {
-  const [tab, setTab] = useState<TabId>('dashboard')
+  const [tab, setTab] = useState<TabId>(tabFromHash)
   const [month, setMonth] = useState(() => todayIso().slice(0, 7))
+
+  // Keep the active tab in the URL so it can be bookmarked and survives reloads
+  useEffect(() => {
+    const onHashChange = () => setTab(tabFromHash())
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  const selectTab = (id: TabId) => {
+    setTab(id)
+    history.replaceState(null, '', `#${id}`)
+  }
 
   return (
     <FinanceProvider>
@@ -39,7 +56,7 @@ export default function App() {
 
         <nav className="tabs" role="tablist">
           {TABS.map((t) => (
-            <button key={t.id} className="tab" role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}>
+            <button key={t.id} className="tab" role="tab" aria-selected={tab === t.id} onClick={() => selectTab(t.id)}>
               {t.label}
             </button>
           ))}

@@ -5,7 +5,7 @@ import { useFinance } from '../state/FinanceContext'
 import { INVESTMENT_KIND_LABELS } from '../lib/labels'
 import { formatCompactCurrency, formatCurrency, formatDate, formatPercent, newId, parseAmount, todayIso } from '../lib/format'
 import { projectGrowth, summarizePortfolio } from '../lib/finance'
-import { BALANCE_COLOR, colorAt, INCOME_COLOR } from '../lib/palette'
+import { BALANCE_COLOR, colorAt, INCOME_COLOR, ANIMATE_CHARTS } from '../lib/palette'
 import { Card, Empty, Field, Kpi } from '../components/ui'
 
 interface Draft {
@@ -283,8 +283,8 @@ export function InvestmentsPage() {
                       labelFormatter={(y) => `Ano ${y}`}
                     />
                     <Legend wrapperStyle={{ fontSize: 12 }} />
-                    <Area dataKey="value" name="Patrimônio" stroke={BALANCE_COLOR} fill={BALANCE_COLOR} fillOpacity={0.18} strokeWidth={2} />
-                    <Area dataKey="contributed" name="Aportes" stroke={INCOME_COLOR} fill={INCOME_COLOR} fillOpacity={0.12} strokeWidth={2} />
+                    <Area isAnimationActive={ANIMATE_CHARTS} dataKey="value" name="Patrimônio" stroke={BALANCE_COLOR} fill={BALANCE_COLOR} fillOpacity={0.18} strokeWidth={2} />
+                    <Area isAnimationActive={ANIMATE_CHARTS} dataKey="contributed" name="Aportes" stroke={INCOME_COLOR} fill={INCOME_COLOR} fillOpacity={0.12} strokeWidth={2} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -302,7 +302,7 @@ export function InvestmentsPage() {
             <div className="chart">
               <ResponsiveContainer>
                 <PieChart>
-                  <Pie data={allocation} dataKey="value" nameKey="name" innerRadius="55%" outerRadius="85%" paddingAngle={1.5}>
+                  <Pie isAnimationActive={ANIMATE_CHARTS} data={allocation} dataKey="value" nameKey="name" innerRadius="55%" outerRadius="85%" paddingAngle={allocation.length > 1 ? 1.5 : 0}>
                     {allocation.map((a, i) => (
                       <Cell key={a.name} fill={colorAt(i)} stroke="var(--surface)" />
                     ))}

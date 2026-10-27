@@ -20,3 +20,7 @@ export const EXPENSE_COLOR = '#f97316'
 export const BALANCE_COLOR = '#3b82f6'
 
 export const colorAt = (index: number) => CHART_COLORS[index % CHART_COLORS.length]
+
+/** Chart animations are skipped for people who ask the OS for reduced motion. */
+export const ANIMATE_CHARTS =
+  typeof window === 'undefined' || !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches

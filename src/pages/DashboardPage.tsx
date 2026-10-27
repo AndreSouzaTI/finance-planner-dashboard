@@ -27,7 +27,7 @@ import {
   transactionsInMonth,
 } from '../lib/finance'
 import { formatCompactCurrency, formatCurrency, formatDate, formatMonthShort, formatPercent } from '../lib/format'
-import { BALANCE_COLOR, colorAt, EXPENSE_COLOR, INCOME_COLOR } from '../lib/palette'
+import { BALANCE_COLOR, colorAt, EXPENSE_COLOR, INCOME_COLOR, ANIMATE_CHARTS } from '../lib/palette'
 import { buildSampleData } from '../lib/sampleData'
 import { Card, Empty, Kpi, MonthPicker } from '../components/ui'
 
@@ -146,12 +146,12 @@ export function DashboardPage({ month, onMonthChange }: { month: string; onMonth
             <ResponsiveContainer>
               <ComposedChart data={daily} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
                 <CartesianGrid stroke="var(--border)" vertical={false} />
-                <XAxis dataKey="day" {...axisProps} interval="preserveStartEnd" />
+                <XAxis dataKey="day" {...axisProps} interval={4} />
                 <YAxis {...axisProps} tickFormatter={formatCompactCurrency} width={70} />
                 <Tooltip {...tooltipStyle} formatter={money} labelFormatter={(d) => `Dia ${d}`} />
                 <Legend wrapperStyle={{ fontSize: 12 }} />
-                <Bar dataKey="expense" name="Gastos" fill={EXPENSE_COLOR} radius={[3, 3, 0, 0]} maxBarSize={14} />
-                <Line dataKey="cumulative" name="Saldo acumulado" stroke={BALANCE_COLOR} strokeWidth={2} dot={false} />
+                <Bar isAnimationActive={ANIMATE_CHARTS} dataKey="expense" name="Gastos" fill={EXPENSE_COLOR} radius={[3, 3, 0, 0]} maxBarSize={14} />
+                <Line isAnimationActive={ANIMATE_CHARTS} dataKey="cumulative" name="Saldo acumulado" stroke={BALANCE_COLOR} strokeWidth={2} dot={false} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>
@@ -165,12 +165,13 @@ export function DashboardPage({ month, onMonthChange }: { month: string; onMonth
               <ResponsiveContainer>
                 <PieChart>
                   <Pie
+                    isAnimationActive={ANIMATE_CHARTS}
                     data={categories}
                     dataKey="total"
                     nameKey="category"
                     innerRadius="55%"
                     outerRadius="85%"
-                    paddingAngle={1.5}
+                    paddingAngle={categories.length > 1 ? 1.5 : 0}
                     onClick={(entry: { category?: string }) =>
                       setSelectedCategory((cur) => (cur === entry.category ? null : (entry.category ?? null)))
                     }
@@ -268,8 +269,8 @@ export function DashboardPage({ month, onMonthChange }: { month: string; onMonth
               <YAxis {...axisProps} tickFormatter={formatCompactCurrency} width={70} />
               <Tooltip {...tooltipStyle} formatter={money} labelFormatter={(m) => formatMonthShort(String(m))} cursor={{ fill: 'var(--surface-2)' }} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Bar dataKey="income" name="Ganhos" fill={INCOME_COLOR} radius={[4, 4, 0, 0]} cursor="pointer" />
-              <Bar dataKey="expense" name="Gastos" fill={EXPENSE_COLOR} radius={[4, 4, 0, 0]} cursor="pointer" />
+              <Bar isAnimationActive={ANIMATE_CHARTS} dataKey="income" name="Ganhos" fill={INCOME_COLOR} radius={[4, 4, 0, 0]} cursor="pointer" />
+              <Bar isAnimationActive={ANIMATE_CHARTS} dataKey="expense" name="Gastos" fill={EXPENSE_COLOR} radius={[4, 4, 0, 0]} cursor="pointer" />
             </BarChart>
           </ResponsiveContainer>
         </div>
