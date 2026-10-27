@@ -71,3 +71,11 @@ export const newId = () =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto
     ? crypto.randomUUID()
     : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
+
+/** Parses "1.234,56", "1234.56" or "1234,5" into a number. */
+export const parseAmount = (raw: string) => {
+  const cleaned = raw.trim().replace(/[R$\s]/g, '')
+  const normalized = cleaned.includes(',') ? cleaned.replace(/\./g, '').replace(',', '.') : cleaned
+  const value = Number(normalized)
+  return Number.isFinite(value) ? value : NaN
+}

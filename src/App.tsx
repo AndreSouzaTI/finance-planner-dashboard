@@ -1,35 +1,42 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { FinanceProvider } from './state/FinanceContext'
+import { todayIso } from './lib/format'
+import { TransactionsPage } from './pages/TransactionsPage'
 
-function App() {
-  const [count, setCount] = useState(0)
+const TABS = [{ id: 'transactions', label: 'Lançamentos' }] as const
+
+type TabId = (typeof TABS)[number]['id']
+
+export default function App() {
+  const [tab, setTab] = useState<TabId>('transactions')
+  const [month, setMonth] = useState(() => todayIso().slice(0, 7))
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <FinanceProvider>
+      <div className="app">
+        <header className="header">
+          <div className="brand">
+            <div className="brand-logo" aria-hidden>
+              R$
+            </div>
+            <div>
+              <h1>Finance Planner</h1>
+              <p>Orçamento, dívidas e investimentos em um só lugar</p>
+            </div>
+          </div>
+        </header>
+
+        <nav className="tabs" role="tablist">
+          {TABS.map((t) => (
+            <button key={t.id} className="tab" role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)}>
+              {t.label}
+            </button>
+          ))}
+        </nav>
+
+        <main>{tab === 'transactions' && <TransactionsPage month={month} onMonthChange={setMonth} />}</main>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </FinanceProvider>
   )
 }
-
-export default App
