@@ -52,6 +52,7 @@
   overflow-x: auto;
   background: var(--bg);
   border-bottom: 1px solid var(--border);
+  scrollbar-width: none;
 }
 
 .tab {
@@ -174,9 +175,13 @@
 }
 
 .month-picker strong {
+  display: inline-block;
   min-width: 150px;
   text-align: center;
-  text-transform: capitalize;
+}
+
+.month-picker strong::first-letter {
+  text-transform: uppercase;
 }
 
 .icon-btn {

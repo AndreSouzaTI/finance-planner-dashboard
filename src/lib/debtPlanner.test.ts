@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { Debt } from '../types'
-import { simulatePayoff } from './debtPlanner'
+import { budgetToPayOffIn, simulatePayoff } from './debtPlanner'
 
 const debt = (id: string, balance: number, monthlyRate: number, minimumPayment: number): Debt => ({
   id,
@@ -54,5 +54,17 @@ describe('simulatePayoff', () => {
     const input = [debt('a', 1000, 2, 100)]
     simulatePayoff(input, 300, 'snowball')
     expect(input[0].balance).toBe(1000)
+  })
+})
+
+describe('budgetToPayOffIn', () => {
+  it('finds a budget that clears the debts within the deadline', () => {
+    const budget = budgetToPayOffIn(debts, 24)
+    expect(simulatePayoff(debts, budget, 'avalanche').months).toBeLessThanOrEqual(24)
+    expect(simulatePayoff(debts, budget - 20, 'avalanche').months).toBeGreaterThan(24)
+  })
+
+  it('is zero when there is nothing to pay', () => {
+    expect(budgetToPayOffIn([], 12)).toBe(0)
   })
 })

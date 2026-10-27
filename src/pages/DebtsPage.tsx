@@ -5,7 +5,7 @@ import { useFinance } from '../state/FinanceContext'
 import { DEBT_KIND_LABELS } from '../lib/labels'
 import { formatCompactCurrency, formatCurrency, newId, parseAmount } from '../lib/format'
 import { monthlyToYearly, summarizeDebts } from '../lib/finance'
-import { simulatePayoff, type PayoffResult } from '../lib/debtPlanner'
+import { budgetToPayOffIn, simulatePayoff, type PayoffResult } from '../lib/debtPlanner'
 import { BALANCE_COLOR, EXPENSE_COLOR } from '../lib/palette'
 import { Card, Empty, Field, Kpi } from '../components/ui'
 
@@ -63,13 +63,21 @@ export function DebtsPage() {
 
   const chartData = useMemo(() => {
     if (!plans) return []
-    const length = Math.min(Math.max(plans.avalanche.timeline.length, plans.snowball.timeline.length), 120)
+    // When the budget never catches up with interest, a short window is enough to show the trend
+    const finite = [plans.avalanche, plans.snowball].filter((p) => !p.neverPaysOff).map((p) => p.months)
+    const cap = finite.length === 2 ? 120 : Math.max(36, ...finite)
+    const length = Math.min(Math.max(plans.avalanche.timeline.length, plans.snowball.timeline.length), cap)
     return Array.from({ length }, (_, i) => ({
       month: i + 1,
       avalanche: plans.avalanche.timeline[i]?.balance ?? 0,
       snowball: plans.snowball.timeline[i]?.balance ?? 0,
     }))
   }, [plans])
+
+  const targets = useMemo(
+    () => (data.debts.length === 0 ? [] : [12, 24, 36].map((months) => ({ months, budget: budgetToPayOffIn(data.debts, months) }))),
+    [data.debts],
+  )
 
   const sorted = [...data.debts].sort((a, b) => b.monthlyRate - a.monthlyRate)
 
@@ -96,7 +104,8 @@ export function DebtsPage() {
     setDraft(blankDraft())
   }
 
-  const savings = plans ? plans.snowball.totalInterest - plans.avalanche.totalInterest : 0
+  const bothPayOff = !!plans && !plans.avalanche.neverPaysOff && !plans.snowball.neverPaysOff
+  const savings = plans && bothPayOff ? plans.snowball.totalInterest - plans.avalanche.totalInterest : 0
 
   return (
     <div className="page">
@@ -250,7 +259,28 @@ export function DebtsPage() {
             </div>
           </div>
 
-          {!plans.avalanche.neverPaysOff && savings > 1 && (
+          {plans.avalanche.neverPaysOff && (
+            <div className="insight insight-danger" style={{ marginBottom: 12 }}>
+              <strong>Com {formatCurrency(effectiveBudget)}/mês a dívida só cresce</strong>
+              <p>Os juros passam do que é pago. Renegocie as taxas mais altas ou aumente o valor mensal.</p>
+            </div>
+          )}
+
+          <div className="btn-row" style={{ marginBottom: 12 }}>
+            {targets.map((t) => (
+              <button key={t.months} className="btn btn-sm" onClick={() => setBudgetInput(String(t.budget))}>
+                Quitar em {t.months} meses: {formatCurrency(t.budget)}/mês
+              </button>
+            ))}
+          </div>
+
+          {!plans.avalanche.neverPaysOff && plans.snowball.neverPaysOff && (
+            <p className="small" style={{ marginTop: 0 }}>
+              Com esse valor, só a <strong>avalanche</strong> quita tudo: na bola de neve os juros do cartão crescem mais rápido do que você paga.
+            </p>
+          )}
+
+          {bothPayOff && savings > 1 && (
             <p className="small" style={{ marginTop: 0 }}>
               A avalanche economiza <strong>{formatCurrency(savings)}</strong> em juros. A bola de neve dá vitórias mais rápidas — escolha a que
               você vai conseguir manter.

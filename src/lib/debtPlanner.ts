@@ -89,3 +89,25 @@ export const simulatePayoff = (
     neverPaysOff: open.some((d) => d.balance > 0.005),
   }
 }
+
+/**
+ * Smallest monthly budget (rounded up to R$ 10) that clears every debt within
+ * the given number of months. Uses binary search over simulatePayoff.
+ */
+export const budgetToPayOffIn = (debts: Debt[], months: number, strategy: PayoffStrategy = 'avalanche') => {
+  const total = debts.reduce((s, d) => s + d.balance, 0)
+  if (total <= 0) return 0
+  const fits = (budget: number) => {
+    const r = simulatePayoff(debts, budget, strategy)
+    return !r.neverPaysOff && r.months <= months
+  }
+  let lo = 0
+  let hi = Math.max(total, 1)
+  while (!fits(hi)) hi *= 2
+  while (hi - lo > 1) {
+    const mid = (lo + hi) / 2
+    if (fits(mid)) hi = mid
+    else lo = mid
+  }
+  return Math.ceil(hi / 10) * 10
+}
