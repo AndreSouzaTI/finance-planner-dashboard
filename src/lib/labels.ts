@@ -2,6 +2,7 @@ import type { DebtKind, InvestmentKind, PaymentMethod, TransactionType } from '.
 
 export const INCOME_CATEGORIES = [
   'Salário',
+  'Aplicativos (Uber, 99, iFood)',
   'Freelance / bico',
   'Vendas',
   'Benefícios',
@@ -14,6 +15,7 @@ export const EXPENSE_CATEGORIES = [
   'Alimentação',
   'Mercado',
   'Transporte',
+  'Combustível',
   'Contas da casa',
   'Saúde',
   'Educação',
@@ -34,6 +36,7 @@ export const ESSENTIAL_CATEGORIES = new Set<string>([
   'Alimentação',
   'Mercado',
   'Transporte',
+  'Combustível',
   'Contas da casa',
   'Saúde',
 ])
